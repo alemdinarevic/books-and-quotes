@@ -1,60 +1,33 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 
-import Post from '../../components/Post/Post';
-import FullPost from '../../components/FullPost/FullPost';
-import NewPost from '../../components/NewPost/NewPost';
+import { Route, Link, NavLink, Switch, Redirect} from 'react-router-dom';
+
+import FullPost from './FullPost/FullPost';
+import Posts from './Posts/Posts';
+import NewPost from './NewPost/NewPost';
 import './Blog.css';
 
 class Blog extends Component {
-    state = {
-		posts: [],
-		selectedPostId: null
-    };
-    componentDidMount() {
-        axios.get('https://jsonplaceholder.typicode.com/posts')
-        .then(response => {
-            const posts = response.data.slice(0,4);
-            const updatedPosts = posts.map(post => { 
-                return {
-					...post, 
-					author: 'Max'
-                }  
-            });
-            this.setState({posts: updatedPosts});
-            //console.log(response);
-        });
-	}
-	
-	postSelectedHandler = (id) => {
-		this.setState({selectedPostId: id});
-	}
+	render () {
+		return (
+			<div className="Blog">
+				<header>
+					<ul>
+						<li><Link to='/'>Home</Link></li>
+						<li><Link to='/new-post'>New Post </Link></li>
+					</ul>
+				</header>
+				<Switch>
+					<Route path='/' exact component={Posts}/>
+					<Redirect from='/' to='/posts' />
+					<Route path='/new-post' component={NewPost}/>
+					<Route path='/posts/:id' exact component={FullPost}/>
+				</Switch>
+				
 
-    render () {
-        const posts = this.state.posts
-        .map(post => 
-			<Post 
-				key={post.id} 
-				title={post.title} 
-				author={post.author}
-				clicked={() => this.postSelectedHandler(post.id)}
-			/>
+			</div>
 		);
-
-        return (
-            <div>
-                <section className="Posts">
-                    {posts}
-                </section>
-                <section>
-                    <FullPost id={this.state.selectedPostId} />
-                </section>
-                <section>
-                    <NewPost />
-                </section>
-            </div>
-        );
-    }
+	}
 }
 
 export default Blog;
